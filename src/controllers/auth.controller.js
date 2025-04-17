@@ -36,10 +36,10 @@ export const authController = {
         return;
       }
 
-      const validaPass = await user.isValidPassword(body.password);
+      const validatePass = await user.isValidPassword(body.password);
 
-      console.log({ validaPass });
-      if (!validaPass) {
+      console.log({ validatePass });
+      if (!validatePass) {
         res.status(401).send("User detail wrong!");
         return;
       }

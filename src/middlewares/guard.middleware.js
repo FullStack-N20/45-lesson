@@ -1,5 +1,5 @@
 export const roleGuard = (...roles) => {
-  //roles = ["user", "admin", "superadmin"];
+  //roles = ["user", "admin", "superAdmin"];
   return (req, res, next) => {
     try {
       const userRole = user.role | "user";
