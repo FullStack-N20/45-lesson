@@ -1,56 +1,46 @@
-import { collections } from "../common/db.js";
-import { Product } from "../models/index.js";
+import { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct } from '../service/product.service.js';
 
-export const productController = {
-  create: async (req, res, next) => {
+export const createProductController = async (req, res, next) => {
     try {
-      const product = new Product(req.body);
+        const product = await createProduct(req.body);
+        res.status(201).json(product);
+    } catch (error) {
+        next(error);
+    }
+};
 
-      await product.save();
+export const getAllProductsController = async (req, res, next) => {
+    try {
+        const products = await getAllProducts();
+        res.status(200).json(products);
+    } catch (error) {
+        next(error);
+    }
+};
 
-      res.status(201).send(product);
-    } catch (err) {
-      next(err);
-    }
-  },
-  update: (req, res, next) => {
+export const getProductByIdController = async (req, res, next) => {
     try {
-      //
-    } catch (err) {
-      next(err);
+        const product = await getProductById(req.params.id);
+        res.status(200).json(product);
+    } catch (error) {
+        next(error);
     }
-  },
-  findAll: async (req, res, next) => {
-    try {
-      const { page = 1, limit = 10, lang = "uz", mode = "dark" } = req.query;
-      const [fValue, sValues] = userList;
-      // const page = req.query.page || 1
-      // const limit = req.query.limit || 10
+};
 
-      const products = await Product.find()
-        .populate("category", "name")
-        .limit(limit * 1)
-        .skip((page - 1) * limit)
-        .sort({ createdAt: -1 });
-      // const products = await Product.find();
+export const updateProductController = async (req, res, next) => {
+    try {
+        const product = await updateProduct(req.params.id, req.body);
+        res.status(200).json(product);
+    } catch (error) {
+        next(error);
+    }
+};
 
-      res.status(200).send(products);
-    } catch (err) {
-      next(err);
-    }
-  },
-  findOne: (req, res, next) => {
+export const deleteProductController = async (req, res, next) => {
     try {
-      //
-    } catch (err) {
-      next(err);
+        const product = await deleteProduct(req.params.id);
+        res.status(200).json(product);
+    } catch (error) {
+        next(error);
     }
-  },
-  delete: (req, res, next) => {
-    try {
-      //
-    } catch (err) {
-      next(err);
-    }
-  },
 };
