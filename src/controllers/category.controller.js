@@ -1,50 +1,49 @@
-import { Category } from "../models/index.js";
+import { categoryService } from '../service/index.js';
+import { StatusCodes } from 'http-status-codes';
 
 export const categoryController = {
-  create: async (req, res, next) => {
-    try {
-      const category = new Category(req.body);
-      await category.save();
+    create: async (req, res, next) => {
+        try {
+            const category = await categoryService.create(req.body);
+            res.status(StatusCodes.CREATED).json(category);
+        } catch (error) {
+            next(error);
+        }
+    },
 
-      res.status(201).send({
-        status: "ok",
-        data: category,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-  update: (req, res, next) => {
-    try {
-      //
-    } catch (err) {
-      next(err);
-    }
-  },
-  findAll: async (req, res, next) => {
-    try {
-      const categories = await Category.find();
+    getAll: async (req, res, next) => {
+        try {
+            const categories = await categoryService.getAll();
+            res.status(StatusCodes.OK).json(categories);
+        } catch (error) {
+            next(error);
+        }
+    },
 
-      res.status(201).json({
-        status: "ok",
-        data: categories,
-      });
-    } catch (err) {
-      next(err);
+    getById: async (req, res, next) => {
+        try {
+            const category = await categoryService.getById(req.params.id);
+            res.status(StatusCodes.OK).json(category);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    update: async (req, res, next) => {
+        try {
+            const category = await categoryService.update(req.params.id, req.body);
+            res.status(StatusCodes.OK).json(category);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    delete: async (req, res, next) => {
+        try {
+            const category = await categoryService.delete(req.params.id);
+            res.status(StatusCodes.OK).json(category);
+        } catch (error) {
+            next(error);
+        }
     }
-  },
-  findOne: (req, res, next) => {
-    try {
-      //
-    } catch (err) {
-      next(err);
-    }
-  },
-  delete: (req, res, next) => {
-    try {
-      //
-    } catch (err) {
-      next(err);
-    }
-  },
 };

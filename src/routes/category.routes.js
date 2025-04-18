@@ -1,13 +1,14 @@
-import { Router } from "express";
-import { categoryController } from "../controllers/index.js";
-import { validateBody } from "../middlewares/validation.middleware.js";
-import { categorySchema } from "../validations/index.js";
+import express from 'express';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { categoryController } from '../controllers/index.js';
 
-export const categoryRouter = Router();
+const router = express.Router();
 
-categoryRouter
-  .post("/", validateBody(categorySchema), categoryController.create)
-  .get("/", categoryController.findAll)
-  .get("/:id", categoryController.findOne)
-  .put("/:id", categoryController.update)
-  .delete("/:id", categoryController.delete);
+router.get('/categories', categoryController.getAll);
+router.get('/categories/:id', categoryController.getById);
+
+router.post('/categories', authMiddleware, categoryController.create);
+router.put('/categories/:id', authMiddleware, categoryController.update);
+router.delete('/categories/:id', authMiddleware, categoryController.delete);
+
+export default router;

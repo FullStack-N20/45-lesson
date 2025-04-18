@@ -1,30 +1,32 @@
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
+import helmet from "helmet";
 
-import { User } from "./models/index.js";
-import {
-  customMiddelware,
-  newMiddeleware,
-} from "./middlewares/custom.middleware.js";
-import { roleGuard } from "./middlewares/guard.middleware.js";
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 import { appRouter } from "./routes/index.js";
+import { StatusCodes } from "http-status-codes";
+
 const app = express();
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("combined"));
+app.use(cors());
+app.use(helmet());
+
 
 app.use("/api/v1", appRouter);
-//role = user, moderator, guest, admin, superadmin
 
-// app.use(
-//   "/",
-//   // roleGuard("user", "admin", "superadmin"),
-//   newMiddeleware,
-//   customMiddelware,
-//   // customController.findAll,
-// );
 
-// app.use(ErrorMiddleware);
+app.use((req, res) => {
+  res.status(StatusCodes.NOT_FOUND).json({ 
+    message: "Route not found",
+    status: StatusCodes.NOT_FOUND 
+  });
+});
+
+app.use(errorMiddleware);
 
 export default app;

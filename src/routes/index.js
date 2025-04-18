@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { authRouter } from "./auth.routes.js";
-import { categoryRouter } from "./category.routes.js";
-import { productRouter } from "./product.routes.js";
+import authRouter from "./auth.routes.js";
+import categoryRouter from "./category.routes.js";
+import productRouter from "./product.routes.js";
+import orderRouter from "./order.routes.js";
+import userRouter from "./user.routes.js";
+
 export const appRouter = Router();
 
 appRouter.use("/auth", authRouter);
 appRouter.use("/category", categoryRouter);
 appRouter.use("/product", productRouter);
-// appRouter.use(userRouter);
+appRouter.use("/order", orderRouter);
+appRouter.use("/user", userRouter);

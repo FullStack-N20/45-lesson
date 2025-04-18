@@ -6,4 +6,7 @@ export const config = {
     url: process.env.DATABASE_URL,
   },
   nodeEnv: process.env.NODE_ENV,
+  jwt: {
+    secret: process.env.JWT_SECRET,
+  },
 };

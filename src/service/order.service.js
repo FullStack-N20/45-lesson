@@ -1,11 +1,11 @@
-import { Product } from "../models/index.js";
+import { Order } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 
-export const productService = {
-    create: async (productData) => {
+export const orderService = {
+    create: async (orderData) => {
         try {
-            const product = new Product(productData);
-            return await product.save();
+            const order = new Order(orderData);
+            return await order.save();
         } catch (error) {
             error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
             throw error;
@@ -14,22 +14,26 @@ export const productService = {
 
     getAll: async () => {
         try {
-            return await Product.find().populate('category');
+            return await Order.find()
+                .populate('user')
+                .populate('product');
         } catch (error) {
             error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
             throw error;
         }
     },
 
-    getById: async (productId) => {
+    getById: async (orderId) => {
         try {
-            const product = await Product.findById(productId).populate('category');
-            if (!product) {
-                const error = new Error('Product not found');
+            const order = await Order.findById(orderId)
+                .populate('user')
+                .populate('product');
+            if (!order) {
+                const error = new Error('Order not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return order;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -38,20 +42,22 @@ export const productService = {
         }
     },
 
-    update: async (productId, updateData) => {
+    update: async (orderId, updateData) => {
         try {
-            const product = await Product.findByIdAndUpdate(
-                productId,
+            const order = await Order.findByIdAndUpdate(
+                orderId,
                 updateData,
                 { new: true, runValidators: true }
-            ).populate('category');
+            )
+            .populate('user')
+            .populate('product');
             
-            if (!product) {
-                const error = new Error('Product not found');
+            if (!order) {
+                const error = new Error('Order not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return order;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -60,15 +66,15 @@ export const productService = {
         }
     },
 
-    delete: async (productId) => {
+    delete: async (orderId) => {
         try {
-            const product = await Product.findByIdAndDelete(productId);
-            if (!product) {
-                const error = new Error('Product not found');
+            const order = await Order.findByIdAndDelete(orderId);
+            if (!order) {
+                const error = new Error('Order not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return order;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -76,6 +82,4 @@ export const productService = {
             throw error;
         }
     }
-};
-
-
+}; 

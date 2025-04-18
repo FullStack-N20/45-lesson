@@ -1,11 +1,11 @@
-import { Product } from "../models/index.js";
+import { Category } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 
-export const productService = {
-    create: async (productData) => {
+export const categoryService = {
+    create: async (categoryData) => {
         try {
-            const product = new Product(productData);
-            return await product.save();
+            const category = new Category(categoryData);
+            return await category.save();
         } catch (error) {
             error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
             throw error;
@@ -14,22 +14,22 @@ export const productService = {
 
     getAll: async () => {
         try {
-            return await Product.find().populate('category');
+            return await Category.find();
         } catch (error) {
             error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
             throw error;
         }
     },
 
-    getById: async (productId) => {
+    getById: async (categoryId) => {
         try {
-            const product = await Product.findById(productId).populate('category');
-            if (!product) {
-                const error = new Error('Product not found');
+            const category = await Category.findById(categoryId);
+            if (!category) {
+                const error = new Error('Category not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return category;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -38,20 +38,19 @@ export const productService = {
         }
     },
 
-    update: async (productId, updateData) => {
+    update: async (categoryId, updateData) => {
         try {
-            const product = await Product.findByIdAndUpdate(
-                productId,
+            const category = await Category.findByIdAndUpdate(
+                categoryId,
                 updateData,
                 { new: true, runValidators: true }
-            ).populate('category');
-            
-            if (!product) {
-                const error = new Error('Product not found');
+            );
+            if (!category) {
+                const error = new Error('Category not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return category;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -60,15 +59,15 @@ export const productService = {
         }
     },
 
-    delete: async (productId) => {
+    delete: async (categoryId) => {
         try {
-            const product = await Product.findByIdAndDelete(productId);
-            if (!product) {
-                const error = new Error('Product not found');
+            const category = await Category.findByIdAndDelete(categoryId);
+            if (!category) {
+                const error = new Error('Category not found');
                 error.statusCode = StatusCodes.NOT_FOUND;
                 throw error;
             }
-            return product;
+            return category;
         } catch (error) {
             if (!error.statusCode) {
                 error.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -76,6 +75,4 @@ export const productService = {
             throw error;
         }
     }
-};
-
-
+}; 

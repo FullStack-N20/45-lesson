@@ -1,55 +1,76 @@
-import { status } from "http-status";
-
-import { User } from "../models/index.js";
+import { userService } from '../service/index.js';
+import { StatusCodes } from 'http-status-codes';
 
 export const authController = {
   signUp: async (req, res, next) => {
     try {
-      const body = req.body;
-      const user = await User.findOne(
-        { email: body.email },
-        "email _id",
-      ).exec();
-
-      console.log(user);
-      if (!user) {
-        const newUser = new User(body);
-
-        await newUser.save();
-        res.send(newUser);
+      const { email, password, full_name } = req.body;
+      
+      const result = await userService.create({ email, password, full_name });
+      
+      const user = { ...result.toJSON(), password: undefined };
+      
+      res.status(StatusCodes.CREATED).json({ user });
+    } catch (error) {
+      if (error.code === 11000) {
+        return res.status(StatusCodes.CONFLICT).json({ 
+          message: 'Email already registered' 
+        });
       }
-
-      res.send("User already exists!;");
-      return;
-    } catch (err) {
-      next(err);
+      next(error);
     }
   },
+  
   signIn: async (req, res, next) => {
     try {
-      const body = req.body;
-
-      const user = await User.findOne({ email: body.email });
-
-      if (!user) {
-        res.send("User not found!");
-        return;
+      const { email, password } = req.body;
+      
+      const result = await userService.login(email, password);
+      
+      res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+      if (error.message === 'Invalid credentials') {
+        return res.status(StatusCodes.UNAUTHORIZED).json({ 
+          message: error.message 
+        });
       }
-
-      const validatePass = await user.isValidPassword(body.password);
-
-      console.log({ validatePass });
-      if (!validatePass) {
-        res.status(401).send("User detail wrong!");
-        return;
-      }
-
-      res.send({
-        message: "ok",
-        data: user,
-      });
-    } catch (err) {
-      next(err);
+      next(error);
     }
   },
+  
+  register: async (req, res, next) => {
+    try {
+      const { email, password, full_name } = req.body;
+      
+      const result = await userService.create({ email, password, full_name });
+      
+      const user = { ...result.toJSON(), password: undefined };
+      
+      res.status(StatusCodes.CREATED).json({ user });
+    } catch (error) {
+      if (error.code === 11000) { 
+        return res.status(StatusCodes.CONFLICT).json({ 
+          message: 'Email already registered' 
+        });
+      }
+      next(error);
+    }
+  },
+  
+  login: async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      
+      const result = await userService.login(email, password);
+      
+      res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+      if (error.message === 'Invalid credentials') {
+        return res.status(StatusCodes.UNAUTHORIZED).json({ 
+          message: error.message 
+        });
+      }
+      next(error);
+    }
+  }
 };
